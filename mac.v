@@ -67,7 +67,7 @@ module MAC30(
 
     wire [18 : 0] pn = pos - negs, np = negs - pos;
     assign out = (pos > negs) ? {1'b0, pn} : {1'b1, np};
-
+endmodule
 
 module MAC4(
     a,
