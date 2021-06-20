@@ -1,4 +1,4 @@
-module label_mem(
+module Label_Mem(
     adr,
     mem_read,
     out

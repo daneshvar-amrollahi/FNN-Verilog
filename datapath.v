@@ -1,4 +1,4 @@
-module datapath(
+module Datapath(
     inp_data,
     sel_inp,
     sel_reg,
