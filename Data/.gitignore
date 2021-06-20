@@ -27,5 +27,6 @@ sc_dpiheader.h
 vsim.dbg
 
 /.vscode
+*.out
 
 # End of https://www.toptal.com/developers/gitignore/api/modelsim
