@@ -6,12 +6,23 @@ module datapath(
     sel_b,
     clk,
     rst,
-    ldreg
+    ldreg,
+    addr_cnt,
+    cntAdrEn,
+    accuracy,
+    cntAcEn,
+    expected
 );
-    input [62 * 8 - 1 : 0] inp_data;
-    input sel_inp, sel_reg, sel_w, sel_b;
-    input [30 - 1 : 0] ldreg;
+    input [62 * 8 - 1 : 0] inp_data; //input from data_mem
+    input sel_inp, sel_reg, sel_w, sel_b; //input from controller
+    input [30 - 1 : 0] ldreg; //input from controller
     input clk, rst;
+    output [9 : 0] addr_cnt; //output to 1. label_mem 2. data_mem 3. controller
+    input cntAdrEn; //input signal from controller
+    output [9 : 0] accuracy; //output of module
+    input cntAcEn; //input signal from controller
+    output eq; //output signal to controller
+    input [3 : 0] expected; //expected label: coming from label mem
 
     //////////////////////////////////////////////////////////////////////////////////////////////////
     wire [7 : 0] bo [0 : 10 - 1];
@@ -209,8 +220,35 @@ module datapath(
     endgenerate 
 
 
-    assign reg_h = {reg_h_out[29], reg_h_out[28], reg_h_out[27], reg_h_out[26], reg_h_out[25], reg_h_out[24], reg_h_out[23], reg_h_out[22], reg_h_out[21], reg_h_out[20], reg_h_out[19], reg_h_out[18], reg_h_out[17], reg_h_out[16], reg_h_out[15], reg_h_out[14], reg_h_out[13], reg_h_out[12], reg_h_out[11], reg_h_out[10], reg_h_out[9], reg_h_out[8], reg_h_out[7], reg_h_out[6], reg_h_out[5], reg_h_out[4], reg_h_out[3], reg_h_out[2], reg_h_out[1], reg_h_out[0]}
+    assign reg_h = {reg_h_out[29], reg_h_out[28], reg_h_out[27], reg_h_out[26], reg_h_out[25], reg_h_out[24], 
+    reg_h_out[23], reg_h_out[22], reg_h_out[21], reg_h_out[20], reg_h_out[19], reg_h_out[18], reg_h_out[17], 
+    reg_h_out[16], reg_h_out[15], reg_h_out[14], reg_h_out[13], reg_h_out[12], reg_h_out[11], reg_h_out[10], 
+    reg_h_out[9], reg_h_out[8], reg_h_out[7], reg_h_out[6], reg_h_out[5], reg_h_out[4], 
+    reg_h_out[3], reg_h_out[2], reg_h_out[1], reg_h_out[0]};
 
-    
 
+    wire [3 : 0] predicton;
+    GetMax GetMax(
+        .in( {neuron_out[9], neuron_out[8], neuron_out[7], neuron_out[6], neuron_out[5], neuron_out[4], neuron_out[3], neuron_out[2], neuron_out[1], neuron_out[0]} ),    
+        .enable(sel_reg),
+
+        .out(prediction) 
+    );
+
+
+    Counter AddrCount(
+        .clk(clk),
+        .rst(rst),
+        .cnt(addr_cnt),
+        .cnten(cntAdrEn)
+    );
+
+    Counter AccuracyCount(
+        .clk(clk),
+        .rst(rst)
+        .cnt(accuracy),
+        .cnten(cntAcEn)
+    );
+
+    assign eq = (prediction == expected); 
 endmodule

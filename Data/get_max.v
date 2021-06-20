@@ -1,4 +1,4 @@
-module get_max(
+module GetMax(
     in,    
     enable,
 
