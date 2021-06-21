@@ -10,7 +10,12 @@ module FNN(
 
     wire eq, read_mem_inp, sel_inp, sel_reg, cnt_addr_en, cnt_ac_en, read_mem_label;
     wire [1 : 0] sel_w, sel_b;
+    wire [30 - 1 : 0] ld_reg;
+    wire [9 : 0] addr_cnt;
 
+    wire [62 * 8 - 1 : 0] inp_data;
+
+    wire [3 : 0] expected;
     Controller Controller(
         .clk(clk),
         .rst(rst),
@@ -28,12 +33,7 @@ module FNN(
         .done(done)
     );
 
-    wire [30 - 1 : 0] ld_reg;
-    wire [9 : 0] addr_cnt;
-
-    wire [62 * 8 - 1 : 0] inp_data;
-
-    wire [3 : 0] expected;
+    
     Datapath Datapath(  
         .inp_data(inp_data),
         .sel_inp(sel_inp),
@@ -47,6 +47,7 @@ module FNN(
         .cntAdrEn(cnt_addr_en),
         .accuracy(accuracy),
         .cntAcEn(cnt_ac_en),
+        .eq(eq),
         .expected(expected)
     );
 
@@ -73,8 +74,11 @@ module TB();
     initial begin
         rst = 1'b1;
         clk = 0;
-        repeat(2000)
+        #15
+        rst = 1'b0;
+        repeat(200000)
             #10 clk = ~clk;
+            #10000
         $stop;
     end
 

@@ -11,10 +11,12 @@ module Datapath(
     cntAdrEn,
     accuracy,
     cntAcEn,
+    eq,
     expected
 );
     input [62 * 8 - 1 : 0] inp_data; //input from data_mem
-    input sel_inp, sel_reg, sel_w, sel_b; //input from controller
+    input sel_inp, sel_reg;
+    input [1 : 0] sel_w, sel_b; //input from controller
     input [30 - 1 : 0] ldreg; //input from controller
     input clk, rst;
     output [9 : 0] addr_cnt; //output to 1. label_mem 2. data_mem 3. controller
@@ -38,7 +40,7 @@ module Datapath(
     assign bo[9] = 8'b00000111;
 
     //////////////////////////////////////////////////////////////////////////////////////////////////
-    wire [7 : 0] bo [0: 30 - 1];
+    wire [7 : 0] bh [0: 30 - 1];
 
     assign bh[0] = 8'b00110100;
     assign bh[1] = 8'b00110110;
@@ -142,7 +144,7 @@ module Datapath(
         end
     endgenerate
 
-    wire [62 * 8 - 1] mux_w_out [0 : 10 - 1];
+    wire [62 * 8 - 1:0] mux_w_out [0 : 10 - 1];
     generate
         for (i = 0 ; i < 10 ; i = i + 1)
         begin
@@ -227,28 +229,27 @@ module Datapath(
     reg_h_out[3], reg_h_out[2], reg_h_out[1], reg_h_out[0]};
 
 
-    wire [3 : 0] predicton;
+    wire [3 : 0] prediction;
     GetMax GetMax(
         .in( {neuron_out[9], neuron_out[8], neuron_out[7], neuron_out[6], neuron_out[5], neuron_out[4], neuron_out[3], neuron_out[2], neuron_out[1], neuron_out[0]} ),    
         .enable(sel_reg),
-
-        .out(prediction) 
+        .max(prediction) 
     );
 
 
-    Counter AddrCount(
+    counter AddrCount(
         .clk(clk),
         .rst(rst),
         .cnt(addr_cnt),
         .cnten(cntAdrEn)
     );
 
-    Counter AccuracyCount(
+    counter AccuracyCount(
         .clk(clk),
-        .rst(rst)
+        .rst(rst),
         .cnt(accuracy),
         .cnten(cntAcEn)
     );
 
-    assign eq = (prediction == expected); 
+    assign eq = (prediction == expected) ? 1'b1 : 1'b0; 
 endmodule

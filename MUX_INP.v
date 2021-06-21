@@ -6,10 +6,10 @@ module MUX_INP(
     out
 );
     input sel_inp, sel_reg;
-    input [62 * 8 - 1] inp;
-    input [30 * 8 - 1] reg_h;
+    input [62 * 8 - 1:0] inp;
+    input [30 * 8 - 1:0] reg_h;
 
-    output [62 * 8 - 1] out;
+    output reg[62 * 8 - 1:0] out;
 
     always @(*)
     begin

@@ -18,41 +18,43 @@ module Controller(
     input eq;
     input [9 : 0] addr_cnt;
 
-    output read_mem_inp;
-    output sel_inp, sel_reg;
-    output [1 : 0] sel_w, sel_b;
-    output [30 - 1 : 0] ld_reg;
-    output cnt_addr_en, read_mem_label, cnt_ac_en;
-    output done;
+    output reg read_mem_inp;
+    output reg sel_inp, sel_reg;
+    output reg [1 : 0] sel_w, sel_b;
+    output reg [30 - 1 : 0] ld_reg;
+    output reg cnt_addr_en, read_mem_label, cnt_ac_en;
+    output reg done;
 
-    always @()
+    
 
     reg [2 : 0] ps, ns;
-    always @(ps, addr_cnt)
-    begin
-        if (ps == 3'd0)
-            ps = 3'd1;
-        
-        if (ps == 3'd1)
-            ps = 3'd2;
-
-        if (ps == 3'd2)
-            ps = 3'd3;
-
-        if (ps == 3'd3)
-            if (addr_cnt < 10'd750)
-                ns = 3'd0;
-            else
-                ns = 3'd4; //end state
-    end
-
-    always @(posedge clk, posedge rst)
+	
+	always @(posedge clk, posedge rst)
     begin
         if (rst)
             ps <= 3'd0;
         else
             ps <= ns;
     end
+	
+    always @(ps, addr_cnt)
+    begin
+	case(ps)
+		3'd0: ns = 3'd1;
+		3'd1: ns = 3'd2;
+		3'd2: ns = 3'd3;
+		3'd3: 
+		begin
+			if(addr_cnt < 10'd750)
+			ns = 3'd0;
+			else
+			ns = 3'd4;
+		end
+         //end state
+		 endcase
+    end
+
+    
 
     always @(ps, eq)
     begin
