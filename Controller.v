@@ -60,6 +60,7 @@ module Controller(
     begin
         read_mem_inp = 1'b0;
         sel_inp = 1'b0;
+        sel_reg = 1'b0;
         sel_w = 2'd0;
         sel_b = 2'd0;
         ld_reg = 30'd0;
@@ -78,6 +79,7 @@ module Controller(
 
         if (ps == 3'd1)
         begin
+            read_mem_inp = 1'b1;
             sel_inp = 1'b1;
             sel_w = 2'd1;
             sel_b = 2'd1;
@@ -86,6 +88,7 @@ module Controller(
 
         if (ps == 3'd2)
         begin
+            read_mem_inp = 1'b1;
             sel_inp = 1'b1;
             sel_w = 2'd2;
             sel_b = 2'd2;

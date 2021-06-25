@@ -20,36 +20,51 @@ module Neuron(
     );
 
     reg [21 : 0] added;
-
+    reg [20:0] tof;
     always @(bias, mac_out)
     begin
         if (bias[7] == 1'b1 && mac_out[20] == 1'b1)
-            added = {1'b1, {6'b0, bias[6 : 0] * 7'b1111111}} + mac_out[19 : 0];
-
+        begin
+            tof = bias[6 : 0] * 7'd127 + mac_out[19 : 0];
+            added = {1'b1, tof};
+        end
         if (bias[7] == 1'b1 && mac_out[20] == 1'b0)
         begin
             if (mac_out[19 : 0] > bias[6 : 0])
-                added = {1'b0, mac_out[19 : 0] - {6'b0, bias[6 : 0] * 7'b1111111}};
-            else
-                added = {1'b1, {6'b0, bias[6 : 0] * 7'b1111111}} - mac_out[19 : 0];
+              begin
+                tof = mac_out[19 : 0] - bias[6 : 0] * 7'd127;
+                added = {1'b0, tof};
+              end
+            else 
+            begin
+                tof =  bias[6 : 0] * 7'd127 - mac_out[19 : 0];
+                added = {1'b1,tof};
+              end
         end
 
 
         if (bias[7] == 1'b0 && mac_out[20] == 1'b1)    
         begin
-            if (mac_out[19 : 0] > bias[6 : 0]) //bias = 8   mac_out = -10
-                added = {1'b1, mac_out[19 : 0] - {6'b0, bias[6 : 0] * 7'b1111111}}; 
-            else
-                added = {1'b0, {6'b0, bias[6 : 0] * 7'b1111111} - mac_out[19 : 0]};
+            if (mac_out[19 : 0] > bias[6 : 0]) begin
+            //bias = 8   mac_out = -10
+                tof = mac_out[19 : 0] - bias[6 : 0] * 7'd127;
+                added = {1'b1, tof}; 
+              end
+            else begin
+                tof = bias[6 : 0] * 7'd127 - mac_out[19 : 0];
+                added = {1'b0, tof};
+              end
         end
 
-        if (bias[7] == 1'b0 && mac_out[20] == 1'b0)
-            added = {1'b0, mac_out[19 : 0] + {6'b0, bias[6 : 0] * 7'b1111111}};
+        if (bias[7] == 1'b0 && mac_out[20] == 1'b0)begin
+            tof = mac_out[19 : 0] + bias[6 : 0] * 7'd127;
+            added = {1'b0, tof};
+          end
     end 
 
 
     wire [21 : 0] added_sh;
-    assign added_sh = {added[21], 8'b0, added[20 : 8]};
+    assign added_sh = {added[21], 9'b0, added[20 : 9]};
 
 
     reg [21 : 0] relu_out;
@@ -67,7 +82,7 @@ module Neuron(
     end
     
     assign out = (relu_out > 21'd127) ? {1'b0, 7'b1111111} : {1'b0, relu_out[6 : 0]};
-
+   // $display("out = %d", out);
 
 endmodule
 
@@ -91,7 +106,14 @@ module neuron_tb();
 
         bias = {1'b0, 7'd100}; 
 
-        //out = 100 - 73 = 37
+        //out = 100*127 - 73 -> 127
+        #500
+        in = {496'b0 };
+
+        weight = { {464'b0}, {1'b0, 7'd2}, {1'b1, 7'd3}, {1'b0, 7'd4}, {1'b1, 7'd5} };
+
+        bias = {8'b0}; 
+        //out = 0
         #1000;
         $stop;
     end
