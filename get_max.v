@@ -22,16 +22,16 @@ module GetMax(
     always @(*)
     begin
 
-    $display("%d", n0);
-    $display("%d", n1);
-    $display("%d", n2);
-    $display("%d", n3);
-    $display("%d", n4);
-    $display("%d", n5);
-    $display("%d", n6);
-    $display("%d", n7);
-    $display("%d", n8);
-    $display("%d", n9);
+    // $display("%d", n0);
+    // $display("%d", n1);
+    // $display("%d", n2);
+    // $display("%d", n3);
+    // $display("%d", n4);
+    // $display("%d", n5);
+    // $display("%d", n6);
+    // $display("%d", n7);
+    // $display("%d", n8);
+    // $display("%d", n9);
 
         if (enable == 1'b0)
             max = 4'bZ;

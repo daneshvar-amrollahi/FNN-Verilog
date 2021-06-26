@@ -24,12 +24,12 @@ module MAC62(
 			if (a[8 * i + 7] ^ w[8 * i + 7] == 1'b1) //negative
             begin
 				negs = negs + a[8 * i +: 7] * w[8 * i +: 7];
-                $display("i = %d, neg: %d %d    ", i, a[8 * i +: 7], w[8 * i +: 7]);
+                //$display("i = %d, neg: %d %d    ", i, a[8 * i +: 7], w[8 * i +: 7]);
             end
 			else
             begin
 				pos = pos + a[8 * i +: 7] * w[8 * i +: 7];  
-                $display("i = %d, pos %d %d", i, a[8 * i +: 7], w[8 * i +: 7]);      
+                //$display("i = %d, pos %d %d", i, a[8 * i +: 7], w[8 * i +: 7]);      
             end
 		end
 	end
